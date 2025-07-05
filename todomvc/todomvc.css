@@ -1,0 +1,300 @@
+/* --- THEME & VARIABLES --- */
+/*
+  Using CSS Custom Properties (Variables) for easy theme management.
+  The default theme is dark. A light theme is defined under the [data-theme="light"] selector.
+*/
+:root {
+  --font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --font-smoothing: antialiased;
+  
+  /* Dark Theme Colors */
+  --bg-color: #1a1a1a;
+  --container-bg: #242424;
+  --text-color: #e2e2e2;
+  --text-color-light: #a0a0a0;
+  --border-color: #444;
+  --input-bg: #1e1e1e;
+  --item-bg: transparent;
+  --item-hover-bg: #2a2a2a;
+  --button-color: #777;
+  --button-hover-color: #e2e2e2;
+  --accent-color: #5d93ff;
+  --destroy-color: #e57373;
+  --destroy-hover-color: #ef5350;
+  --shadow-color: rgba(0, 0, 0, 0.4);
+  --line-through-color: #777;
+
+  --transition-fast: all 0.2s ease;
+}
+
+/* Light Theme: Activated by adding data-theme="light" to the body */
+[data-theme="light"] {
+  --bg-color: #f5f5f5;
+  --container-bg: #ffffff;
+  --text-color: #4d4d4d;
+  --text-color-light: #999;
+  --border-color: #e6e6e6;
+  --input-bg: rgba(0, 0, 0, 0.003);
+  --item-bg: transparent;
+  --item-hover-bg: #f9f9f9;
+  --button-color: #bfbfbf;
+  --button-hover-color: #777;
+  --accent-color: #2e7dff;
+  --destroy-color: #d88080;
+  --destroy-hover-color: #af5b5e;
+  --shadow-color: rgba(0, 0, 0, 0.2);
+  --line-through-color: #d9d9d9;
+}
+
+
+/* --- BASE & LAYOUT --- */
+body {
+  font: 14px var(--font-family);
+  -webkit-font-smoothing: var(--font-smoothing);
+  -moz-osx-font-smoothing: grayscale;
+  background: var(--bg-color);
+  color: var(--text-color);
+  margin: 0;
+  padding: 20px;
+  transition: var(--transition-fast);
+}
+
+.todoapp {
+  background: var(--container-bg);
+  margin: 50px auto;
+  max-width: 550px;
+  position: relative;
+  box-shadow: 0 5px 30px -5px var(--shadow-color);
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+  transition: var(--transition-fast);
+}
+
+
+/* --- HEADER --- */
+.header h1 {
+  width: 100%;
+  font-size: 80px;
+  font-weight: 200;
+  text-align: center;
+  color: var(--accent-color);
+  opacity: 0.5;
+  margin: 20px 0;
+}
+
+.new-todo {
+  padding: 16px 16px 16px 60px;
+  border: none;
+  background: var(--input-bg);
+  width: 100%;
+  box-sizing: border-box;
+  font-size: 24px;
+  font-style: italic;
+  font-weight: 300;
+  color: var(--text-color);
+  border-bottom: 1px solid var(--border-color);
+  transition: var(--transition-fast);
+}
+
+.new-todo::placeholder {
+  color: var(--text-color-light);
+  opacity: 0.5;
+}
+
+.new-todo:focus {
+  outline: none;
+  box-shadow: inset 0 -2px 1px var(--shadow-color);
+}
+
+
+/* --- TODO LIST --- */
+.main {
+  position: relative;
+  z-index: 2;
+}
+
+.todo-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.todo-list li {
+  position: relative;
+  font-size: 24px;
+  border-bottom: 1px solid var(--border-color);
+  background: var(--item-bg);
+  transition: background 0.2s ease-out;
+}
+
+.todo-list li:hover {
+  background: var(--item-hover-bg);
+}
+
+.todo-list li .destroy {
+  display: none;
+  position: absolute;
+  top: 0;
+  right: 10px;
+  bottom: 0;
+  width: 40px;
+  height: 40px;
+  margin: auto 0;
+  font-size: 30px;
+  color: var(--destroy-color);
+  transition: color 0.2s ease-out;
+  cursor: pointer;
+}
+
+.todo-list li .destroy:hover {
+  color: var(--destroy-hover-color);
+}
+
+.todo-list li .destroy::after {
+  content: '×';
+}
+
+.todo-list li:hover .destroy {
+  display: block;
+}
+
+.todo-list li label {
+  word-break: break-all;
+  padding: 15px 15px 15px 60px;
+  display: block;
+  line-height: 1.2;
+  transition: color 0.4s;
+}
+
+/* --- CUSTOM CHECKBOX --- */
+.toggle {
+  opacity: 0; /* Hide the default checkbox */
+  position: absolute;
+}
+
+.toggle + label {
+  position: relative;
+  cursor: pointer;
+}
+
+/* Custom checkbox box */
+.toggle + label::before {
+  content: '';
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 30px;
+  height: 30px;
+  border: 1px solid var(--border-color);
+  border-radius: 50%;
+  transition: var(--transition-fast);
+}
+
+/* Custom checkmark */
+.toggle:checked + label::after {
+  content: '✔';
+  position: absolute;
+  left: 22px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 20px;
+  color: var(--accent-color);
+  transition: var(--transition-fast);
+  opacity: 0.8;
+}
+
+.toggle:checked + label::before {
+  border-color: var(--accent-color);
+  opacity: 0.5;
+}
+
+/* Completed item styling */
+.todo-list li.completed label {
+  color: var(--line-through-color);
+  text-decoration: line-through;
+}
+
+/* --- FOOTER --- */
+.footer {
+  color: var(--text-color-light);
+  padding: 10px 15px;
+  height: 20px;
+  text-align: center;
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.todo-count {
+  text-align: left;
+  flex: 1;
+}
+
+.filters {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex: 1;
+  justify-content: center;
+}
+
+.filters li {
+  display: inline;
+}
+
+.filters li a {
+  color: inherit;
+  margin: 3px;
+  padding: 3px 7px;
+  text-decoration: none;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  transition: var(--transition-fast);
+}
+
+.filters li a:hover {
+  border-color: var(--accent-color);
+  opacity: 0.6;
+}
+
+.filters li a.selected {
+  border-color: var(--accent-color);
+  font-weight: 500;
+}
+
+.clear-completed,
+.clear-completed:active {
+  flex: 1;
+  text-align: right;
+  position: relative;
+  line-height: 20px;
+  text-decoration: none;
+  cursor: pointer;
+  color: var(--button-color);
+}
+
+.clear-completed:hover {
+  color: var(--button-hover-color);
+  text-decoration: underline;
+}
+
+/* General button styling */
+button {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: none;
+    font-size: 100%;
+    vertical-align: baseline;
+    font-family: inherit;
+    font-weight: inherit;
+    color: inherit;
+    -webkit-appearance: none;
+    appearance: none;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
