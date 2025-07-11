@@ -1,18 +1,32 @@
-import { removeEventListeners } from './events'
-import { DOM_TYPES } from './h'
+import { removeEventListeners } from './events.js'
+import { DOM_TYPES } from './h.js'
 
 function removeTextNode(vdom) {
   const { el } = vdom
-  el.remove()
+  if (el && el.parentNode) {
+    try {
+      el.remove()
+    } catch (error) {
+      // Element might have already been removed
+      console.warn('Element already removed from DOM:', error.message)
+    }
+  }
 }
 
 function removeElementNode(vdom) {
   const { el, children, listeners } = vdom
 
-  el.remove()
+  if (el && el.parentNode) {
+    try {
+      el.remove()
+    } catch (error) {
+      
+    }
+  }
+  
   children.forEach(destroyDOM)
 
-  if (listeners) {
+  if (listeners && el) {
     removeEventListeners(listeners, el)
     delete vdom.listeners
   }
@@ -24,6 +38,8 @@ function removeFragmentNodes(vdom) {
 }
 
 export function destroyDOM(vdom) {
+  if (!vdom) return
+  
   const { type } = vdom
 
   switch (type) {

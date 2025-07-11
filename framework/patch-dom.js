@@ -3,21 +3,22 @@ import {
   setAttribute,
   removeStyle,
   setStyle,
-} from './attributes'
-import { addEventListener } from './events'
-import { destroyDOM } from './destroy-dom'
-import { mountDOM } from './mount-dom'
-import { DOM_TYPES, extractChildren } from './h'
-import { areNodesEqual } from './nodes-equal'
-import { objectsDiff } from './utils/objects'
-import { isNotBlankOrEmptyString } from './utils/strings'
+} from './attributes.js'
+import { addEventListener } from './events.js'
+import { destroyDOM } from './destroy-dom.js'
+import { mountDOM } from './mount-dom.js'
+import { DOM_TYPES, extractChildren } from './h.js'
+import { areNodesEqual } from './nodes-equal.js'
+import { objectsDiff } from './utils/objects.js'
+import { isNotBlankOrEmptyString } from './utils/strings.js'
 import {
   arraysDiff,
   arraysDiffSequence,
   ARRAY_DIFF_OP,
-} from './utils/arrays'
+} from './utils/arrays.js'
 
 function findIndexInParent(parentEl, el) {
+  if (!parentEl || !el) return null
   const index = Array.from(parentEl.childNodes).indexOf(el)
   if (index < 0) {
     return null
@@ -78,7 +79,9 @@ function patchEvents(el, oldListeners = {}, oldEvents = {}, newEvents = {}) {
   const { removed, added, updated } = objectsDiff(oldEvents, newEvents)
   
   for (const eventName of removed.concat(updated)) {
-    el.removeEventListener(eventName, oldListeners[eventName])
+    if (oldListeners[eventName]) {
+      el.removeEventListener(eventName, oldListeners[eventName])
+    }
   }
 
   const addedListeners = {}
@@ -123,16 +126,30 @@ function patchChildren(oldVdom, newVdom) {
         break
       }
       case ARRAY_DIFF_OP.REMOVE: {
-        destroyDOM(item)
+        // Check if the item still exists and has a valid element
+        if (item && item.el && item.el.parentNode) {
+          destroyDOM(item)
+        }
         break
       }
       case ARRAY_DIFF_OP.MOVE: {
         const oldChild = oldChildren[originalIndex]
         const newChild = newChildren[index]
-        const el = oldChild.el
-        const elAtTargetIndex = parentEl.childNodes[index]
-        parentEl.insertBefore(el, elAtTargetIndex)
-        patchDOM(oldChild, newChild, parentEl)
+        
+        if (oldChild && oldChild.el && oldChild.el.parentNode) {
+          const el = oldChild.el
+          const elAtTargetIndex = parentEl.childNodes[index]
+          
+          try {
+            parentEl.insertBefore(el, elAtTargetIndex)
+            patchDOM(oldChild, newChild, parentEl)
+          } catch (error) {
+            console.warn('Failed to move element:', error.message)
+            // Fallback: destroy old and mount new
+            destroyDOM(oldChild)
+            mountDOM(newChild, parentEl, index)
+          }
+        }
         break
       }
       case ARRAY_DIFF_OP.NOOP: {
@@ -144,6 +161,16 @@ function patchChildren(oldVdom, newVdom) {
 }
 
 export function patchDOM(oldVdom, newVdom, parentEl) {
+  if (!oldVdom || !newVdom) {
+    if (oldVdom && oldVdom.el && oldVdom.el.parentNode) {
+      destroyDOM(oldVdom)
+    }
+    if (newVdom && parentEl) {
+      mountDOM(newVdom, parentEl)
+    }
+    return newVdom
+  }
+
   if (!areNodesEqual(oldVdom, newVdom)) {
     const index = findIndexInParent(parentEl, oldVdom.el)
     destroyDOM(oldVdom)

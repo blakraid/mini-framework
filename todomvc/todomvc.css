@@ -132,6 +132,10 @@ body {
   background: var(--item-hover-bg);
 }
 
+.todo-list li .view {
+  position: relative;
+}
+
 .todo-list li .destroy {
   display: none;
   position: absolute;
@@ -165,17 +169,21 @@ body {
   display: block;
   line-height: 1.2;
   transition: color 0.4s;
+  cursor: pointer;
 }
 
 /* --- CUSTOM CHECKBOX --- */
 .toggle {
-  opacity: 0; /* Hide the default checkbox */
   position: absolute;
-}
-
-.toggle + label {
-  position: relative;
+  top: 0;
+  bottom: 0;
+  margin: auto 0;
+  width: 40px;
+  height: 40px;
+  left: 10px;
+  opacity: 0;
   cursor: pointer;
+  z-index: 1;
 }
 
 /* Custom checkbox box */
@@ -190,6 +198,7 @@ body {
   border: 1px solid var(--border-color);
   border-radius: 50%;
   transition: var(--transition-fast);
+  pointer-events: none;
 }
 
 /* Custom checkmark */
@@ -203,6 +212,7 @@ body {
   color: var(--accent-color);
   transition: var(--transition-fast);
   opacity: 0.8;
+  pointer-events: none;
 }
 
 .toggle:checked + label::before {
@@ -214,6 +224,30 @@ body {
 .todo-list li.completed label {
   color: var(--line-through-color);
   text-decoration: line-through;
+}
+
+/* --- EDITING --- */
+.edit {
+  position: relative;
+  margin: 0;
+  width: 100%;
+  font-size: 24px;
+  font-family: inherit;
+  font-weight: inherit;
+  line-height: 1.4em;
+  border: 0;
+  color: inherit;
+  padding: 6px;
+  border: 1px solid #999;
+  box-shadow: inset 0 -1px 5px 0 rgba(0, 0, 0, 0.2);
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: var(--input-bg);
+}
+
+.editing .view {
+  display: none;
 }
 
 /* --- FOOTER --- */
@@ -231,6 +265,10 @@ body {
 .todo-count {
   text-align: left;
   flex: 1;
+}
+
+.todo-count strong {
+  font-weight: 300;
 }
 
 .filters {
