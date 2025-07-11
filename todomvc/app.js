@@ -92,7 +92,11 @@ function TodoItem({ todo, isEditing, editingText }, emit) {
   if (todo.completed) classes.push('completed');
   if (isEditing) classes.push('editing');
 
-  return h('li', { class: classes.join(' ') }, [
+  return h('li', { 
+    class: classes.join(' '),
+    // Add a key attribute for stable identity
+    key: todo.id 
+  }, [
     h('div', { class: 'view' }, [
       h('input', {
         class: 'toggle',
